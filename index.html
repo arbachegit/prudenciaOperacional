@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fale com o Risk - Prudência Operacional</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            overflow: hidden;
+        }
+        .card-content {
+            padding: 20px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .message {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            flex-shrink: 0;
+            z-index: 2;
+        }
+        .message-content {
+            border-radius: 18px;
+            padding: 10px 15px;
+            max-width: calc(100% - 130px);
+            margin: 0 15px;
+        }
+        .risk-message .message-content {
+            background-color: #006400; /* Verde escuro */
+            color: white;
+        }
+        .user-message {
+            flex-direction: row-reverse;
+        }
+        .user-message .message-content {
+            background-color: #00008B; /* Azul escuro */
+            color: white;
+        }
+        .user-message .avatar {
+            order: 1;
+            margin-left: 15px;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option-button {
+            background-color: #00008B; /* Azul escuro */
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: left;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+        .option-button:hover {
+            background-color: #0000CD; /* Azul médio */
+        }
+        .option-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 50px;
+        }
+        .loading-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #333;
+            border-radius: 50%;
+            margin: 0 5px;
+            animation: bounce 0.6s infinite alternate;
+        }
+        .loading-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .loading-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        @keyframes bounce {
+            to {
+                transform: translateY(-10px);
+            }
+        }
+        .close-button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .close-button:hover {
+            background-color: #45a049;
+        }
+        .end-message {
+            text-align: center;
+            font-size: 24px;
+            margin-top: 20px;
+        }
+        @media (max-width: 480px) {
+            .card {
+                max-width: 100%;
+                border-radius: 0;
+            }
+            .card-content {
+                padding: 10px;
+            }
+            .avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+            .message-content {
+                max-width: calc(100% - 110px);
+            }
+            .option-button {
+                padding: 10px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="quiz-container" class="card">
+        <div class="card-content">
+            <!-- Quiz content will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "Como você garante que uma tarefa é realizada corretamente e dentro do prazo?",
+                options: [
+                    { id: 1, text: "Eu sigo um planejamento e mantenho um cronograma rigoroso para cumprir os prazos e padrões." },
+                    { id: 2, text: "Eu faço as tarefas de forma organizada, porém busco mudar para ser mair ágil." }
+                ],
+                correctAnswer: 1,
+                explanation: "A disciplina ajuda a manter a organização e a consistência, essenciais para cumprir prazos e manter a qualidade do trabalho."
+            },
+            {
+                question: "Quando surge um problema inesperado em uma operação, qual é sua atitude?",
+                options: [
+                    { id: 1, text: "Eu avalio rapidamente a situação e tomo as ações necessárias para resolver o problema sem comprometer a operação." },
+                    { id: 2, text: "Eu analiso o problema, mas não posso ignorar as outras tarefas e metas a serem entregues." }
+                ],
+                correctAnswer: 1,
+                explanation: "Ser reativo, no sentido positivo, envolve agir imediatamente para conter problemas, evitando impactos negativos na operação."
+            },
+            {
+                question: "Como você toma decisões em processos operacionais complexos?",
+                options: [
+                    { id: 1, text: "Eu analiso cuidadosamente as informações antes de decidir o melhor curso de ação." },
+                    { id: 2, text: "Eu tomo decisões rapidamente, pois a entrega necessida ser feita, para acelerar o processo." }
+                ],
+                correctAnswer: 1,
+                explanation: "Ser deliberado significa tomar decisões com cuidado, o que reduz o risco de erros e contribui para uma operação mais segura e eficaz."
+            },
+            {
+                question: "Como você verifica a qualidade do seu trabalho em tarefas operacionais?",
+                options: [
+                    { id: 1, text: "Eu reviso minuciosamente cada etapa para garantir que todos os detalhes estão corretos." },
+                    { id: 2, text: "Eu faço uma revisão usando a minha experiência, confiando que o essencial já foi feito." }
+                ],
+                correctAnswer: 1,
+                explanation: "Ser detalhista é essencial para garantir a precisão e a qualidade nas operações, reduzindo a chance de erros e melhorando o resultado final."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let selectedAnswer = null;
+        let isCorrect = null;
+
+        function appendToQuiz(element) {
+            const container = document.querySelector('.card-content');
+            container.appendChild(element);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function startQuiz() {
+            // Saudação inicial
+            appendToQuiz(createMessage('Risk diz:', 'Olá, tudo bem? Vamos testar os seus conhecimentos?', '🤖', '#3498db', false));
+
+            // Animação de carregamento
+            appendToQuiz(createLoading());
+
+            setTimeout(() => {
+                const container = document.querySelector('.card-content');
+                container.removeChild(container.lastChild);
+
+                // Menção ao autodomínio
+                appendToQuiz(createMessage('Risk diz:', 'Vamos falar da prudência operacional.', '🤖', '#3498db', false));
+
+                // Animação de carregamento
+                appendToQuiz(createLoading());
+
+                setTimeout(() => {
+                    const container = document.querySelector('.card-content');
+                    container.removeChild(container.lastChild);
+
+                    // Iniciar o quiz
+                    renderQuiz();
+                }, 1000);
+            }, 1000);
+        }
+
+        function renderQuiz() {
+            if (currentQuestion < quizData.length) {
+                const question = quizData[currentQuestion];
+
+                // Show loading before question
+                appendToQuiz(createLoading());
+                setTimeout(() => {
+                    const container = document.querySelector('.card-content');
+                    container.removeChild(container.lastChild);
+
+                    // Render question
+                    appendToQuiz(createMessage('Risk pergunta:', question.question, '🤖', '#3498db', false));
+            
+                    // Show loading before options
+                    appendToQuiz(createLoading());
+                    setTimeout(() => {
+                        const container = document.querySelector('.card-content');
+                        container.removeChild(container.lastChild);
+                        
+                        // Render options
+                        const optionsContainer = document.createElement('div');
+                        optionsContainer.className = 'options';
+                        question.options.forEach(option => {
+                            const button = document.createElement('button');
+                            button.className = 'option-button';
+                            button.innerHTML = `<span>${option.text}</span>
+							<span class="avatar" style="background-color: #2ecc71; color: white;">😊</span>`;
+							
+							
+                            button.onclick = () => handleSelectAnswer(option.id);
+                            optionsContainer.appendChild(button);
+                        });
+                        appendToQuiz(optionsContainer);
+                    }, 1000);
+                }, 1000);
+            }
+        }
+		
+		
+
+        function handleSelectAnswer(answerId) {
+            selectedAnswer = answerId;
+            isCorrect = answerId === quizData[currentQuestion].correctAnswer;
+            
+            // Show loading before user answer
+            appendToQuiz(createLoading());
+            setTimeout(() => {
+                const container = document.querySelector('.card-content');
+                container.removeChild(container.lastChild);
+
+                // Render user answer
+                const selectedOption = quizData[currentQuestion].options.find(opt => opt.id === selectedAnswer);
+                appendToQuiz(createMessage('Resposta:', selectedOption.text, '😊', '#2ecc71', true));
+
+                // Show loading before Risk's response
+                appendToQuiz(createLoading());
+                setTimeout(() => {
+                    const container = document.querySelector('.card-content');
+                    container.removeChild(container.lastChild);
+
+                    // Render feedback
+                    const message = `
+                        <p>${isCorrect ? 'Parabéns! Você acertou!' : 'Ops! Não foi dessa vez.'}</p>
+                        <p>${quizData[currentQuestion].explanation}</p>
+                    `;
+                    appendToQuiz(createMessage('Risk responde:', message, '🤖', '#3498db', false));
+
+                    // Animação de carregamento de 6 segundos entre "Risk responde" e "Risk diz"
+                    appendToQuiz(createLoading());
+                    setTimeout(() => {
+                        const container = document.querySelector('.card-content');
+                        container.removeChild(container.lastChild);
+                        if (currentQuestion < quizData.length - 1) {
+                            appendToQuiz(createMessage('Risk diz:', 'Vamos para a próxima!', '🤖', '#3498db', false));
+                            currentQuestion++;
+                            setTimeout(renderQuiz, 1000);
+                        } else {
+                            finishQuiz();
+                        }
+                    }, 6000);
+                }, 1000);
+            }, 1000);
+        }
+
+        function createMessage(title, content, avatar, avatarBgColor, isUser) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message' : 'risk-message'}`;
+            messageDiv.innerHTML = `
+                ${isUser ? '' : `<div class="avatar" style="background-color: ${avatarBgColor}; color: white;">${avatar}</div>`}
+                <div class="message-content">
+                    <p><strong>${title}</strong></p>
+                    <p>${content}</p>
+                </div>
+                ${isUser ? `<div class="avatar" style="background-color: ${avatarBgColor}; color: white;">${avatar}</div>` : ''}
+            `;
+            return messageDiv;
+        }
+
+        function createLoading() {
+            const loading = document.createElement('div');
+            loading.className = 'loading';
+            loading.innerHTML = '<div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div>';
+            return loading;
+        }
+
+        function finishQuiz() {
+            // Show loading before final message
+            appendToQuiz(createLoading());
+            setTimeout(() => {
+                const container = document.querySelector('.card-content');
+                container.removeChild(container.lastChild);
+                appendToQuiz(createMessage('Risk diz:', 'Parabéns por completar o quiz!', '🤖', '#3498db', false));
+                
+                // Show loading before closing suggestion
+                appendToQuiz(createLoading());
+                setTimeout(() => {
+                    const container = document.querySelector('.card-content');
+                    container.removeChild(container.lastChild);
+                    const closeMessage = createMessage('Risk sugere:', 'Você gostaria de encerrar este quiz?', '🤖', '#3498db', false);
+                    appendToQuiz(closeMessage);
+
+                    const closeButton = document.createElement('button');
+                    closeButton.className = 'close-button';
+                    closeButton.textContent = 'Tchau';
+                    closeButton.onclick = () => {
+                        try {
+                            window.close();
+                        } catch (e) {
+                            alert('Não foi possível fechar a aba automaticamente. Por favor, feche-a manualmente.');
+                        }
+                    };
+                    appendToQuiz(closeButton);
+                }, 1000);
+            }, 1000);
+        }
+
+        // Start the quiz
+        startQuiz();
+    </script>
+</body>
+</html>
